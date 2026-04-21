@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>台庆电子相册 | 七十载光辉岁月</title>
+    <!-- 引入 Swiper 核心库 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- Font Awesome 6 (免费图标库) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #1a1a2e;
+            overflow: hidden;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* Swiper 容器全屏 */
+        .swiper {
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(145deg, #f9f3e6 0%, #fff4ea 100%);
+        }
+
+        .swiper-slide {
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            scroll-behavior: smooth;
+            padding: 28px 20px 40px;
+            box-sizing: border-box;
+        }
+
+        /* 自定义滚动条 */
+        .swiper-slide::-webkit-scrollbar {
+            width: 5px;
+        }
+        .swiper-slide::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+        .swiper-slide::-webkit-scrollbar-thumb {
+            background: rgba(210, 180, 140, 0.6);
+            border-radius: 10px;
+        }
+
+        /* 模块标题样式 */
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #b5712f, #e4a45c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #d9a066;
+            margin: 12px auto 0;
+            border-radius: 4px;
+        }
+
+        /* 卡片通用样式 */
+        .card-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255,255,245,0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 32px;
+            padding: 18px 20px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid rgba(255,215,170,0.6);
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.12);
+        }
+        .img-round {
+            width: 100%;
+            border-radius: 24px;
+            object-fit: cover;
+            display: block;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+            margin-bottom: 12px;
+        }
+        .img-small {
+            max-height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        .flex-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #e9c9a0;
+        }
+        /* 视频容器 */
+        .video-wrapper {
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            margin: 15px 0;
+        }
+        video {
+            width: 100%;
+            display: block;
+            background: #000;
+        }
+        audio {
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 30px;
+        }
+        /* 寄语气泡 */
+        .message-bubble {
+            background: #fff0e0;
+            padding: 14px 18px;
+            border-radius: 30px;
+            margin: 12px 0;
+            font-style: italic;
+            border-left: 6px solid #e4a05a;
+            font-size: 0.95rem;
+        }
+        .quote-icon {
+            color: #d98e2b;
+            margin-right: 6px;
+        }
+        /* 合影区 */
+        .group-photo {
+            border-radius: 36px;
+            overflow: hidden;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.2);
+            margin: 20px 0;
+        }
+        /* 音乐播放按钮 */
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+            border: none;
+            font-size: 24px;
+        }
+        .music-control:hover {
+            background: #d98e2b;
+            transform: scale(1.05);
+        }
+        /* 封底风格 */
+        .footer-end {
+            text-align: center;
+            padding: 40px 20px;
+            color: #8b6946;
+        }
+        .footer-end i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #c4813a;
+        }
+        /* swiper 导航按钮美化 */
+        .swiper-button-next, .swiper-button-prev {
+            color: #c17b3a;
+            background: rgba(255,248,235,0.7);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            backdrop-filter: blur(4px);
+        }
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .swiper-pagination-bullet-active {
+            background: #d98e2b !important;
+        }
+        /* 适配移动端 */
+        @media (max-width: 600px) {
+            .swiper-slide {
+                padding: 20px 16px 30px;
+            }
+            .section-title {
+                font-size: 1.7rem;
+            }
+            .card {
+                padding: 14px 16px;
+            }
+        }
+        /* 时间轴简约风格 */
+        .timeline {
+            padding-left: 20px;
+            border-left: 3px solid #e4a45c;
+            margin: 20px 0;
+        }
+        .timeline-item {
+            margin-bottom: 20px;
+        }
+        .timeline-year {
+            font-weight: 800;
+            color: #b65f1a;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 背景音乐控制按钮（点击后播放背景音乐） -->
+<button id="bgMusicToggle" class="music-control">
+    <i class="fas fa-music"></i>
+</button>
+<audio id="bgAudio" loop preload="auto" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
+<!-- 注：背景音乐链接为公开测试资源，若网络慢可替换。实际使用可换成本地或企业授权音乐 -->
+
+<div class="swiper-container swiper">
+    <div class="swiper-wrapper">
+        <!-- 1. 封面 -->
+        <div class="swiper-slide" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+            <div style="max-width: 90%;">
+                <i class="fas fa-tv" style="font-size: 80px; color: #d98e2b; margin-bottom: 20px;"></i>
+                <h1 style="font-size: 3rem; font-weight: 900; background: linear-gradient(135deg, #bf712f, #f5bc70); -webkit-background-clip: text; background-clip: text; color: transparent;">辉煌七十载</h1>
+                <p style="font-size: 1.2rem; letter-spacing: 4px; margin: 15px 0; color: #5a3e28;">1956 — 2026</p>
+                <div style="margin-top: 30px; width: 80px; height: 3px; background: #e4a45c; margin: 30px auto;"></div>
+                <p style="margin-top: 20px; color: #a06e3f;">👆 上下滑动页面 | 左右滑动翻页</p>
+                <p style="font-size: 0.9rem; margin-top: 40px; color: #b87a44;"><i class="fas fa-arrow-down"></i> 滑动开启时光之旅</p>
+            </div>
+        </div>
+
+        <!-- 2. 台史回眸·七十征程 -->
+        <div class="swiper-slide">
+            <h2 class="section-title">📺 台史回眸 · 七十征程</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <img class="img-round img-small" src="https://picsum.photos/id/104/800/600" alt="历史影像" loading="lazy">
+                    <div class="timeline">
+                        <div class="timeline-item"><span class="timeline-year">1956年</span> —— 电台初声，电波划破长空</div>
+                        <div class="timeline-item"><span class="timeline-year">1985年</span> —— 彩色电视开播，走进千家万户</div>
+                        <div class="timeline-item"><span class="timeline-year">2003年</span> —— 融媒体探索，数字转型启航</div>
+                        <div class="timeline-item"><span class="timeline-year">2026年</span> —— 辉煌七十，智媒新纪元</div>
+                    </div>
+                    <div class="message-bubble">
+                        <i class="fas fa-history quote-icon"></i> 从黑白到高清，从收音机到全媒体，七十年初心不改。
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="flex-row">
+                        <i class="fas fa-microphone-alt" style="font-size: 2rem; color:#d98e2b;"></i>
+                        <span style="font-weight: bold;">历代台标记忆</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap;">
+                        <img src="https://picsum.photos/id/20/100/100" style="width: 70px; border-radius: 20px;" alt="台标1">
+                        <img src="https://picsum.photos/id/30/100/100" style="width: 70px; border-radius: 20px;" alt="台标2">
+                        <img src="https://picsum.photos/id/39/100/100" style="width: 70px; border-radius: 20px;" alt="台标3">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. AI时光影像·心声寄语 -->
+        <div class="swiper-slide">
+            <h2 class="section-title">🤖 AI时光影像 · 心声寄语</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="flex-row">
+                        <i class="fas fa-robot" style="font-size: 28px; color:#b87333;"></i>
+                        <h3 style="margin:0">AI 时光修复影像</h3>
+                    </div>
+                    <div class="video-wrapper">
+                        <!-- 示例视频（可播放），展示老影像AI修复效果 -->
+                        <video controls poster="https://picsum.photos/id/91/800/450">
+                            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+                            您的浏览器不支持视频播放。
+                        </video>
+                    </div>
+                    <p style="margin-top: 8px;">✨ AI技术让历史画面焕然一新，珍藏感动。</p>
+                </div>
+                <div class="card">
+                    <div class="flex-row">
+                        <i class="fas fa-comment-dots" style="font-size: 26px; color:#d98e2b;"></i>
+                        <span style="font-weight: bold;">AI 生成员工心声集锦</span>
+                    </div>
+                    <div class="message-bubble">
+                        <i class="fas fa-quote-left quote-icon"></i> “从实习到资深，电台见证了我的青春，七十年我们同频共振。”
+                    </div>
+                    <div class="message-bubble">
+                        <i class="fas fa-quote-left quote-icon"></i> “智能时代，初心不变，愿下一个十年更璀璨。”
+                    </div>
+                    <div class="message-bubble">
+                        <i class="fas fa-quote-left quote-icon"></i> “AI生成祝福：电波永续，热爱不息。”
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 历史印记·时光故事 -->
+        <div class="swiper-slide">
+            <h2 class="section-title">📜 历史印记 · 时光故事</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <img class="img-round" src="https://picsum.photos/id/106/800/500" alt="老照片故事" loading="lazy">
+                    <p><strong>📻 第一代播音室</strong> —— 磁带转动的岁月，记录无数温暖声音。</p>
+                </div>
+                <div class="card">
+                    <div class="flex-row">
+                        <i class="fas fa-video" style="font-size: 24px;"></i>
+                        <span>经典栏目回顾 · 视频剪影</span>
+                    </div>
+                    <div class="video-wrapper">
+                        <video controls poster="https://picsum.photos/id/26/800/450">
+                            <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/earth.mp4" type="video/mp4">
+                        </video>
+                    </div>
+                    <p>《七十年声音记忆》纪录片片段，重温感动瞬间。</p>
+                </div>
+                <div class="card">
+                    <div class="flex-row">
+                        <i class="fas fa-camera-retro"></i>
+                        <span>泛黄照片墙</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap;">
+                        <img src="https://picsum.photos/id/80/120/120" style="width: 80px; border-radius: 16px;">
+                        <img src="https://picsum.photos/id/89/120/120" style="width: 80px; border-radius: 16px;">
+                        <img src="https://picsum.photos/id/90/120/120" style="width: 80px; border-radius: 16px;">
+                        <img src="https://picsum.photos/id/94/120/120" style="width: 80px; border-radius: 16px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. 同仁祝福·岁月留声 -->
+        <div class="swiper-slide">
+            <h2 class="section-title">🎤 同仁祝福 · 岁月留声</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="flex-row">
+                        <img class="avatar" src="https://randomuser.me/api/portraits/women/68.jpg" alt="同事">
+                        <div><strong>张雅君 · 资深播音员</strong><br><span style="font-size: 0.8rem;">“声音传递热爱，祝台庆辉煌！”</span></div>
+                    </div>
+                    <audio controls src="https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3">您的浏览器不支持音频播放</audio>
+                    <div class="message-bubble" style="margin-top: 10px;"><i class="fas fa-head-side-headphones"></i> 点击播放她的语音祝福</div>
+                </div>
+                <div class="card">
+                    <div class="flex-row">
+                        <img class="avatar" src="https://randomuser.me/api/portraits/men/32.jpg" alt="同事">
+                        <div><strong>李振国 · 技术总监</strong><br><span style="font-size: 0.8rem;">“七十载技术革新，智媒未来可期”</span></div>
+                    </div>
+                    <audio controls src="https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3"></audio>
+                </div>
+                <div class="card">
+                    <div class="flex-row">
+                        <img class="avatar" src="https://randomuser.me/api/portraits/women/45.jpg" alt="同事">
+                        <div><strong>王思敏 · 融媒体新人</strong><br><span style="font-size: 0.8rem;">“加入大家庭第二载，与台同庆！”</span></div>
+                    </div>
+                    <audio controls src="https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3"></audio>
+                    <p style="margin-top: 8px; font-size: 0.8rem; color:#b97f48;"><i class="far fa-heart"></i> 更多祝福收录于纪念U盘</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. 全台大合影 -->
+        <div class="swiper-slide">
+            <h2 class="section-title">📸 全台大合影 · 同心筑梦</h2>
+            <div class="group-photo">
+                <img src="https://picsum.photos/id/103/1000/600" alt="全台大合影" style="width:100%; display:block;">
+            </div>
+            <div class="card" style="margin-top: 8px;">
+                <div class="flex-row" style="justify-content: center;">
+                    <i class="fas fa-users" style="font-size: 28px;"></i>
+                    <span>全台300余名同仁及退休前辈合影留念</span>
+                </div>
+                <p style="text-align: center; margin-top: 12px;">📍 2026年4月 录制中心广场 · 笑脸定格永恒</p>
+            </div>
+            <!-- 附加一张花絮照 -->
+            <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: center;">
+                <img src="https://picsum.photos/id/169/120/120" style="border-radius: 20px; width: 100px; height: 100px; object-fit: cover;">
+                <img src="https://picsum.photos/id/159/120/120" style="border-radius: 20px; width: 100px; height: 100px; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- 7. 封底 -->
+        <div class="swiper-slide">
+            <div class="footer-end">
+                <i class="fas fa-satellite-dish"></i>
+                <h2 style="margin: 20px 0 10px;">感 恩 相 伴</h2>
+                <p>七十载风雨同舟 · 声生不息</p>
+                <div style="margin: 30px auto; width: 50px; height: 2px; background: #d9a066;"></div>
+                <p><i class="far fa-copyright"></i> 广播电视台台庆组委会 出品</p>
+                <p style="margin-top: 20px; font-size: 0.8rem;">电子交互相册 | 可触摸滑动 | 永久珍藏</p>
+                <p style="margin-top: 40px;"><i class="fas fa-qrcode"></i> 扫码获取专属纪念版</p>
+                <div style="margin-top: 30px;">
+                    <i class="fas fa-music"></i> <i class="fas fa-video"></i> <i class="fas fa-image"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 导航按钮与分页器 -->
+    <div class="swiper-button-next"></div>
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-pagination"></div>
+</div>
+
+<script>
+    // 初始化 Swiper，支持触摸滑动与鼠标拖拽
+    const swiper = new Swiper('.swiper', {
+        direction: 'horizontal',     // 横向滑动
+        loop: false,                // 不循环，自然结尾
+        speed: 500,
+        slidesPerView: 1,
+        spaceBetween: 0,
+        mousewheel: false,          // 为避免与内部滚动冲突，不开启鼠标滚轮翻页，但保留按钮与触摸滑动
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+            dynamicBullets: true,
+        },
+        keyboard: {
+            enabled: true,
+        },
+        // 允许用户触摸滑动切换
+        touchRatio: 1,
+        resistance: true,
+        resistanceRatio: 0.85,
+    });
+
+    // 背景音乐控制 (浏览器限制需用户手势)
+    const bgAudio = document.getElementById('bgAudio');
+    const musicBtn = document.getElementById('bgMusicToggle');
+    let isMusicPlaying = false;
+
+    // 尝试自动播放会被阻止，故用户点击按钮后播放，并改变图标
+    musicBtn.addEventListener('click', () => {
+        if (isMusicPlaying) {
+            bgAudio.pause();
+            musicBtn.innerHTML = '<i class="fas fa-music"></i>';
+            isMusicPlaying = false;
+        } else {
+            // 播放背景音乐
+            bgAudio.play().then(() => {
+                musicBtn.innerHTML = '<i class="fas fa-stop-circle"></i>';
+                isMusicPlaying = true;
+            }).catch(err => {
+                console.log("自动播放被阻止，用户需手动点击播放音乐");
+                // 提示用户可再次点击
+                alert("🎵 点击音乐按钮播放背景音乐 (由于浏览器策略，需手动开启)");
+                // 强制尝试，但再次点击会成功
+                bgAudio.play().then(() => {
+                    musicBtn.innerHTML = '<i class="fas fa-stop-circle"></i>';
+                    isMusicPlaying = true;
+                }).catch(() => {});
+            });
+        }
+    });
+
+    // 优雅处理移动端滑动时避免视频误触音量
+    let videos = document.querySelectorAll('video');
+    videos.forEach(video => {
+        video.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        });
+        // 使视频控制栏正常显示
+    });
+
+    // 给所有音频同样处理
+    let audios = document.querySelectorAll('audio');
+    audios.forEach(audio => {
+        audio.addEventListener('play', () => {
+            // 可选：防止多个音频同时播放？不处理由用户控制
+        });
+    });
+
+    // 页面加载完成时，友好提示交互
+    window.addEventListener('load', () => {
+        // 告知用户可以左右滑动
+        console.log("电子相册已加载 | 滑动浏览七大篇章");
+    });
+</script>
+
+<!-- 额外处理，避免背景音乐在swiper滑动时误触发，无影响 -->
+</body>
+</html>
